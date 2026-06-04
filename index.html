@@ -756,7 +756,10 @@
                 <h4 id="modal-title">Certificate Preview</h4>
                 <button class="modal-close" id="modal-close" aria-label="Close certificate preview">×</button>
             </div>
-            <img id="modal-image" src="" alt="Certificate Preview">
+            <div class="relative">
+                <img id="modal-image" src="" alt="Certificate Preview" class="hidden rounded-2xl w-full h-auto">
+                <iframe id="modal-frame" src="" title="Resume Preview" class="hidden w-full h-[80vh] rounded-2xl border border-slate-800 bg-slate-950"></iframe>
+            </div>
         </div>
     </div>
 
@@ -941,12 +944,26 @@
         const resumeBtn = document.getElementById('resume-btn');
         const certificateModal = document.getElementById('certificate-modal');
         const modalImage = document.getElementById('modal-image');
+        const modalFrame = document.getElementById('modal-frame');
         const modalTitle = document.getElementById('modal-title');
         const modalClose = document.getElementById('modal-close');
 
-        function openCertificateModal(src, title, alt) {
-            modalImage.src = src;
-            modalImage.alt = alt;
+        function openCertificateModal(src, title, alt, type = 'image') {
+            modalImage.src = '';
+            modalImage.alt = '';
+            modalFrame.src = '';
+            modalImage.classList.add('hidden');
+            modalFrame.classList.add('hidden');
+
+            if (type === 'pdf' || src.toLowerCase().endsWith('.pdf')) {
+                modalFrame.src = src;
+                modalFrame.classList.remove('hidden');
+            } else {
+                modalImage.src = src;
+                modalImage.alt = alt;
+                modalImage.classList.remove('hidden');
+            }
+
             modalTitle.textContent = title;
             certificateModal.classList.add('active');
             certificateModal.setAttribute('aria-hidden', 'false');
@@ -956,6 +973,9 @@
             certificateModal.classList.remove('active');
             certificateModal.setAttribute('aria-hidden', 'true');
             modalImage.src = '';
+            modalFrame.src = '';
+            modalImage.classList.add('hidden');
+            modalFrame.classList.add('hidden');
         }
 
         certificateThumbs.forEach(thumb => {
@@ -967,7 +987,7 @@
         if (resumeBtn) {
             resumeBtn.addEventListener('click', event => {
                 event.preventDefault();
-                openCertificateModal('img/cv.png', 'Resume Preview', 'Curriculum Vitae');
+                openCertificateModal('cv-samillano.pdf', 'Resume Preview', 'Curriculum Vitae', 'pdf');
             });
         }
 
