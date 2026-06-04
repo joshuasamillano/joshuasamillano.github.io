@@ -78,6 +78,78 @@
             text-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
         }
 
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 1.5rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+            overflow: hidden;
+        }
+
+        .modal-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 1rem;
+            object-fit: contain;
+            display: block;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .modal-header h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: #e2e8f0;
+        }
+
+        .modal-close {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #e2e8f0;
+            cursor: pointer;
+            border: 1px solid rgba(148, 163, 184, 0.15);
+        }
+
+        .certificate-thumb {
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .certificate-thumb:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        }
+
         @keyframes float {
 
             0%,
@@ -553,16 +625,16 @@
                                 Achievements</span>
                             <h3 class="text-xl font-bold text-slate-100 mt-1">Academic & Technical Milestones</h3>
                             <p class="mt-4 text-sm text-slate-300 leading-relaxed max-w-2xl">
-                                Recognized for academic excellence and technical skill development through multiple
-                                certifications and project-based achievements. These milestones highlight strong knowledge
-                                in database systems, web design, and software project delivery.
+                                This gallery highlights five certificate achievements spanning technical training,
+                                networking simulation, database fundamentals, and the SMART-PMC capstone project.
+                                Click any certificate to view it larger and explore the achievement details.
                             </p>
                             <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 items-center">
-                                <img src="img/cert1.png" alt="Certificate 1" class="w-full h-28 object-contain rounded-2xl border border-slate-800 bg-slate-950 p-2">
-                                <img src="img/cert2.png" alt="Certificate 2" class="w-full h-28 object-contain rounded-2xl border border-slate-800 bg-slate-950 p-2">
-                                <img src="img/cert3.png" alt="Certificate 3" class="w-full h-28 object-contain rounded-2xl border border-slate-800 bg-slate-950 p-2">
-                                <img src="img/cert4.png" alt="SMART-PMC Certificate" class="w-full h-28 object-contain rounded-2xl border border-slate-800 bg-slate-950 p-2">
-                                <img src="img/cert5.png" alt="Certificate 5" class="w-full h-28 object-contain rounded-2xl border border-slate-800 bg-slate-950 p-2">
+                                <img src="img/cert1.png" alt="Technical Training Certificate" class="certificate-thumb w-full h-28 object-contain rounded-2xl border border-slate-800 bg-slate-950 p-2" data-title="Technical Training Certificate">
+                                <img src="img/cert2.png" alt="Web Development Certificate" class="certificate-thumb w-full h-28 object-contain rounded-2xl border border-slate-800 bg-slate-950 p-2" data-title="Web Development Certificate">
+                                <img src="img/cert3.png" alt="Cisco Packet Tracer Certificate" class="certificate-thumb w-full h-28 object-contain rounded-2xl border border-slate-800 bg-slate-950 p-2" data-title="Cisco Packet Tracer Certificate">
+                                <img src="img/cert4.png" alt="SMART-PMC Capstone Certificate" class="certificate-thumb w-full h-28 object-contain rounded-2xl border border-slate-800 bg-slate-950 p-2" data-title="SMART-PMC Capstone Certificate">
+                                <img src="img/cert5.png" alt="Advanced Database Certificate" class="certificate-thumb w-full h-28 object-contain rounded-2xl border border-slate-800 bg-slate-950 p-2" data-title="Advanced Database Certificate">
                             </div>
                         </div>
                     </div>
@@ -683,6 +755,16 @@
         </section>
 
     </main>
+
+    <div class="modal-overlay" id="certificate-modal" aria-hidden="true">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h4 id="modal-title">Certificate Preview</h4>
+                <button class="modal-close" id="modal-close" aria-label="Close certificate preview">×</button>
+            </div>
+            <img id="modal-image" src="" alt="Certificate Preview">
+        </div>
+    </div>
 
     <footer class="bg-slate-950 border-t border-slate-900 relative z-10 py-12 px-6">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
@@ -859,6 +941,45 @@
             speed: 400,
             glare: true,
             "max-glare": 0.1,
+        });
+
+        const certificateThumbs = document.querySelectorAll('.certificate-thumb');
+        const certificateModal = document.getElementById('certificate-modal');
+        const modalImage = document.getElementById('modal-image');
+        const modalTitle = document.getElementById('modal-title');
+        const modalClose = document.getElementById('modal-close');
+
+        function openCertificateModal(src, title, alt) {
+            modalImage.src = src;
+            modalImage.alt = alt;
+            modalTitle.textContent = title;
+            certificateModal.classList.add('active');
+            certificateModal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeCertificateModal() {
+            certificateModal.classList.remove('active');
+            certificateModal.setAttribute('aria-hidden', 'true');
+            modalImage.src = '';
+        }
+
+        certificateThumbs.forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                openCertificateModal(thumb.src, thumb.dataset.title || 'Certificate Preview', thumb.alt);
+            });
+        });
+
+        modalClose.addEventListener('click', closeCertificateModal);
+        certificateModal.addEventListener('click', event => {
+            if (event.target === certificateModal) {
+                closeCertificateModal();
+            }
+        });
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && certificateModal.classList.contains('active')) {
+                closeCertificateModal();
+            }
         });
     </script>
 </body>
