@@ -265,7 +265,7 @@
                         <a href="#contact"
                             class="px-6 py-3 rounded-lg border border-slate-700 hover:border-indigo-500 text-slate-200 font-medium bg-slate-900/40 hover:bg-indigo-500/10 transition duration-300 transform hover:-translate-y-0.5">Contact
                             Me</a>
-                        <a href="#"
+                        <a href="#" id="resume-btn"
                             class="px-6 py-3 rounded-lg border border-slate-700 hover:border-cyan-400 text-slate-200 font-medium bg-slate-900/40 hover:bg-cyan-500/10 transition duration-300 transform hover:-translate-y-0.5"><i
                                 class="fa-solid fa-download mr-2 text-cyan-400"></i>Resume</a>
                     </div>
@@ -938,6 +938,7 @@
         });
 
         const certificateThumbs = document.querySelectorAll('.certificate-thumb');
+        const resumeBtn = document.getElementById('resume-btn');
         const certificateModal = document.getElementById('certificate-modal');
         const modalImage = document.getElementById('modal-image');
         const modalTitle = document.getElementById('modal-title');
@@ -962,6 +963,13 @@
                 openCertificateModal(thumb.src, thumb.dataset.title || 'Certificate Preview', thumb.alt);
             });
         });
+
+        if (resumeBtn) {
+            resumeBtn.addEventListener('click', event => {
+                event.preventDefault();
+                openCertificateModal('img/cv.png', 'Resume Preview', 'Curriculum Vitae');
+            });
+        }
 
         modalClose.addEventListener('click', closeCertificateModal);
         certificateModal.addEventListener('click', event => {
